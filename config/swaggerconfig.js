@@ -4,9 +4,9 @@ const options = {
   definition: {
     openapi: '3.0.0',
     info: {
-      title: 'My API',
+      title: 'Game Store Arima API',
       version: '1.0.0',
-      description: 'Comprehensive API documentation for the backend services',
+      description: 'Comprehensive API documentation for the Game Store Arima application',
     },
      components: {
       securitySchemes: {
