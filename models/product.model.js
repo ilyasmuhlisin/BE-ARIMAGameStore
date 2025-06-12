@@ -13,6 +13,7 @@ const productSchema = new mongoose.Schema({
     ref: 'Developer',
     required: true,
   },
+  pictures: {type: String, match: [/^https?:\/\/.+\.(jpg|jpeg|png|gif)$/i, 'Please enter a valid URL']},
   price: { type: Number, required: true },
   created_at: { type: Date, default: Date.now },
 });

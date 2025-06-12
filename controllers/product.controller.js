@@ -23,8 +23,11 @@ const getProductById = async (req, res, next) => {
 
 const createProduct = async (req, res, next) => {
   try {
-    const { name,description, categories_id, developer_id, price } = req.body;
-    const product = await Product.create({name, description, categories_id, developer_id, price });
+    const { name,description, categories_id, developer_id, price, pictures } = req.body;
+    if (pictures && !/^https?:\/\/.+\.(jpg|jpeg|png|gif)$/i.test(pictures)) {
+      return res.status(400).json({ message: 'Invalid picture URL format' });
+    }
+    const product = await Product.create({name,pictures, description, categories_id, developer_id, price });
     res.status(201).json(product);
   } catch (err) {
     next(err);
