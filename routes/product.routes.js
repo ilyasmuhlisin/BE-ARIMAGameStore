@@ -50,6 +50,9 @@ router.delete('/:id', authMiddleware, adminMiddleware, deleteProduct);
  *         createdAt:
  *           type: string
  *           format: date-time
+ *         pictures:
+ *           type: string
+ *           example: https://example.com/assets/logo.png
  *         updatedAt:
  *           type: string
  *           format: date-time
@@ -87,6 +90,7 @@ router.delete('/:id', authMiddleware, adminMiddleware, deleteProduct);
  *               - categories_id
  *               - developer_id
  *               - price
+ *               - pictures
  *             properties:
  *               name:
  *                 type: string
@@ -98,6 +102,8 @@ router.delete('/:id', authMiddleware, adminMiddleware, deleteProduct);
  *                 type: string
  *               price:
  *                 type: number
+ *               pictures:
+ *                 type: string
  *     responses:
  *       201:
  *         description: Product created successfully
@@ -158,6 +164,8 @@ router.delete('/:id', authMiddleware, adminMiddleware, deleteProduct);
  *                 type: string
  *               price:
  *                 type: number
+ *               pictures:
+ *                 type: string
  *     responses:
  *       200:
  *         description: Product updated successfully
