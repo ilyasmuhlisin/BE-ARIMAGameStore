@@ -11,7 +11,7 @@ const createOrder = async (req, res, next) => {
     if (!product) return res.status(404).json({ message: 'Product not found' });
 
     const existingLibrary = await GameLibrary.findOne({ user_id, game_id });
-    if (existingLibrary) return res.status(400).json({ message: 'Game already in library' });
+    if (existingLibrary) return res.status(409).json({ message: 'Game already in library' });
 
     const order = await Order.create({ game_id, user_id, price: product.price });
     await GameLibrary.create({ user_id, game_id });
