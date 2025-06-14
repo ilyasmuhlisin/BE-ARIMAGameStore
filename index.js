@@ -1,30 +1,75 @@
-// index.js
-const express = require('express');
-const dotenv = require('dotenv');
-const cors = require('cors');
-const connectDB = require('./config/db');
-const errorHandler = require('./middlewares/errorHandler');
-const swaggerUi = require('swagger-ui-express');
-const swaggerSpec = require('./config/swaggerconfig');
+const express = require("express");
+const dotenv = require("dotenv");
+const cors = require("cors");
+const mongoose = require("mongoose");
+const swaggerUi = require("swagger-ui-express");
+const swaggerJSDoc = require("swagger-jsdoc");
 
-
-dotenv.config();
-connectDB();
+const authRoutes = require("./routes/auth.routes");
+const productRoutes = require("./routes/product.routes");
+const categoryRoutes = require("./routes/category.routes");
+const developerRoutes = require("./routes/developer.routes");
+const orderRoutes = require("./routes/order.routes");
+const reviewRoutes = require("./routes/review.routes");
+const userRoutes = require("./routes/user.routes");
+const adminRoutes = require("./routes/admin.routes");
+const errorHandler = require("./middlewares/errorHandler");
 
 const app = express();
+dotenv.config();
+
+mongoose
+  .connect(process.env.MONGO_URI)
+  .then(() => console.log("MongoDB Connected"))
+  .catch((err) => {
+    console.error(err);
+    process.exit(1);
+  });
+
 app.use(cors());
 app.use(express.json());
 
-app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+const swaggerSpec = swaggerJSDoc({
+  definition: {
+    openapi: "3.0.0",
+    info: {
+      title: "Game Store Arima API",
+      version: "1.0.0",
+      description: "Comprehensive API documentation for the Game Store Arima application",
+    },
+    servers: [
+      {
+        url: "http://localhost:5000",
+      },
+    ],
+    components: {
+      securitySchemes: {
+        bearerAuth: {
+          type: "http",
+          scheme: "bearer",
+          bearerFormat: "JWT",
+        },
+      },
+    },
+    security: [
+      {
+        bearerAuth: [],
+      },
+    ],
+  },
+  apis: ["./routes/*.js"],
+});
 
-app.use('/api/auth', require('./routes/auth.routes'));
-app.use('/api/products', require('./routes/product.routes'));
-app.use('/api/orders', require('./routes/order.routes'));
-app.use('/api/reviews', require('./routes/review.routes'));
-app.use('/api/categories', require('./routes/category.routes'));
-app.use('/api/developers', require('./routes/developer.routes'));
-app.use('/api/users', require('./routes/user.routes'));
-app.use('/api/admin', require('./routes/admin.routes'));
+app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+
+app.use("/api/auth", authRoutes);
+app.use("/api/products", productRoutes);
+app.use("/api/categories", categoryRoutes);
+app.use("/api/developers", developerRoutes);
+app.use("/api/orders", orderRoutes);
+app.use("/api/reviews", reviewRoutes);
+app.use("/api/users", userRoutes);
+app.use("/api/admin", adminRoutes);
 
 app.use(errorHandler);
 
