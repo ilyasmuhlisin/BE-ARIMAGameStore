@@ -15,7 +15,7 @@ const adminMiddleware = require("../middlewares/adminMiddleware");
  * @swagger
  * /api/orders:
  *   post:
- *     summary: Create a new order (checkout game)
+ *     summary: Create a new order (checkout games)
  *     tags: [Orders]
  *     security:
  *       - bearerAuth: []
@@ -26,26 +26,30 @@ const adminMiddleware = require("../middlewares/adminMiddleware");
  *           schema:
  *             type: object
  *             required:
- *               - game_id
+ *               - products
  *               - payment_method
  *             properties:
- *               game_id:
- *                 type: string
- *                 example: 661acaa84692f1ae0be3a2b7
+ *               products:
+ *                 type: array
+ *                 description: List of product IDs to purchase
+ *                 items:
+ *                   type: string
+ *                   example: 661acaa84692f1ae0be3a2b7
  *               payment_method:
  *                 type: string
  *                 enum: [OVO, BCA, DANA, ShopeePay, QRIS]
  *                 example: OVO
  *               proof:
  *                 type: string
- *                 example: https://imgur.com/bukti.png
+ *                 description: Optional proof of payment URL
+ *                 example: https://imgur.com/bukti-transfer.png
  *     responses:
  *       201:
  *         description: Order created successfully
- *       409:
- *         description: Game already in library
+ *       400:
+ *         description: Invalid input
  *       404:
- *         description: Product not found
+ *         description: Some products not found
  */
 router.post("/", authMiddleware, createOrder);
 
