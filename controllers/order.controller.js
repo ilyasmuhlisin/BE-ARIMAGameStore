@@ -4,19 +4,25 @@ const Product = require("../models/product.model");
 
 const createOrder = async (req, res, next) => {
   try {
-    const { game_id, payment_method, proof } = req.body;
+    const { products, payment_method, proof } = req.body;
     const user_id = req.user.id;
 
-    const product = await Product.findById(game_id);
-    if (!product) return res.status(404).json({ message: "Product not found" });
+    if (!Array.isArray(products) || products.length === 0) {
+      return res.status(400).json({ message: "Products are required" });
+    }
 
-    const alreadyOwned = await GameLibrary.findOne({ user_id, game_id });
-    if (alreadyOwned) return res.status(409).json({ message: "Game already in library" });
+    const foundProducts = await Product.find({ _id: { $in: products } });
+
+    if (foundProducts.length !== products.length) {
+      return res.status(404).json({ message: "Some products not found" });
+    }
+
+    const total_price = foundProducts.reduce((acc, item) => acc + item.price, 0);
 
     const order = await Order.create({
-      game_id,
+      products,
       user_id,
-      price: product.price,
+      total_price,
       payment_method,
       proof,
       status: "pending",
@@ -30,7 +36,7 @@ const createOrder = async (req, res, next) => {
 
 const getMyOrders = async (req, res, next) => {
   try {
-    const orders = await Order.find({ user_id: req.user.id }).populate("game_id").sort({ createdAt: -1 });
+    const orders = await Order.find({ user_id: req.user.id }).populate("products", "name").sort({ createdAt: -1 });
 
     res.json(orders);
   } catch (err) {
@@ -40,7 +46,7 @@ const getMyOrders = async (req, res, next) => {
 
 const getAllOrders = async (req, res, next) => {
   try {
-    const orders = await Order.find().populate("user_id", "username").populate("game_id", "name").sort({ createdAt: -1 });
+    const orders = await Order.find().populate("user_id", "username").populate("products", "name").sort({ createdAt: -1 });
 
     res.json(orders);
   } catch (err) {
@@ -60,9 +66,18 @@ const verifyOrder = async (req, res, next) => {
     order.status = "completed";
     await order.save();
 
-    const alreadyInLibrary = await GameLibrary.findOne({ user_id: order.user_id, game_id: order.game_id });
-    if (!alreadyInLibrary) {
-      await GameLibrary.create({ user_id: order.user_id, game_id: order.game_id });
+    for (const productId of order.products) {
+      const exists = await GameLibrary.findOne({
+        user_id: order.user_id,
+        game_id: productId,
+      });
+
+      if (!exists) {
+        await GameLibrary.create({
+          user_id: order.user_id,
+          game_id: productId,
+        });
+      }
     }
 
     res.json({ message: "Order marked as completed" });
