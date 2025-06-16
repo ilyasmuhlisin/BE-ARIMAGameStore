@@ -1,4 +1,3 @@
-// controllers/auth.controller.js
 const bcrypt = require('bcryptjs');
 const User = require('../models/user.model');
 const { generateToken } = require('../utils/token');
@@ -54,4 +53,25 @@ const login = async (req, res, next) => {
   }
 };
 
-module.exports = { register, login };
+const changePassword = async (req, res, next) => {
+  try {
+    const { oldPassword, newPassword } = req.body;
+    if (!oldPassword || !newPassword) {
+      return res.status(400).json({ message: 'Old and new passwords are required' });
+    }
+
+    const user = await User.findById(req.user.id);
+    if (!user || !(await bcrypt.compare(oldPassword, user.password))) {
+      return res.status(401).json({ message: 'Invalid old password' });
+    }
+
+    user.password = await bcrypt.hash(newPassword, 10);
+    await user.save();
+
+    res.json({ message: 'Your password changed successfully' });
+  } catch (err) {
+    next(err);
+  }
+}
+
+module.exports = { register, login, changePassword };
