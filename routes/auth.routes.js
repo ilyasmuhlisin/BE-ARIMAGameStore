@@ -1,10 +1,12 @@
 // routes/auth.routes.js
 const express = require('express');
 const router = express.Router();
-const { register, login } = require('../controllers/auth.controller');
+const authMiddleware = require('../middlewares/authMiddleware');
+const { register, login, changePassword } = require('../controllers/auth.controller');
 
 router.post('/register', register);
 router.post('/login', login);
+router.post('/change-password', authMiddleware, changePassword);
 
 /**
  * @swagger
@@ -103,5 +105,61 @@ router.post('/login', login);
  *         description: Invalid email or password
  */
 
+/**
+ * @swagger
+ * /api/auth/change-password:
+ *   post:
+ *     summary: Change the password of the authenticated user
+ *     tags: [Auth]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - oldPassword
+ *               - newPassword
+ *             properties:
+ *               oldPassword:
+ *                 type: string
+ *                 example: oldPassword123
+ *               newPassword:
+ *                 type: string
+ *                 example: newPassword456
+ *     responses:
+ *       200:
+ *         description: Password changed successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Your password changed successfully
+ *       400:
+ *         description: Missing required fields
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Old and new passwords are required
+ *       401:
+ *         description: Invalid old password
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Invalid old password
+ */
 
 module.exports = router;
