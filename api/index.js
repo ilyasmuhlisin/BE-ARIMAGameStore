@@ -2,9 +2,9 @@ const express = require("express");
 const dotenv = require("dotenv");
 const cors = require("cors");
 const mongoose = require("mongoose");
-const swaggerJSDoc = require("swagger-jsdoc");
+const swaggerUi = require("swagger-ui-express");
+const swaggerFile = require("../swagger-output.json");
 const path = require("path");
-const swaggerUiDist = require("swagger-ui-dist");
 
 dotenv.config();
 
@@ -22,7 +22,7 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-// ✅ MongoDB Connection
+// Connect MongoDB
 let isConnected = false;
 async function connectMongo() {
   if (isConnected) return;
@@ -36,68 +36,15 @@ async function connectMongo() {
 }
 connectMongo();
 
-// ✅ Swagger JSDoc setup
-const swaggerSpec = swaggerJSDoc({
-  definition: {
-    openapi: "3.0.0",
-    info: {
-      title: "Game Store Arima API",
-      version: "1.0.0",
-      description: "API docs for Arima Game Store backend",
-    },
-    servers: [{ url: "https://be-arima-game-store.vercel.app" }],
-    components: {
-      securitySchemes: {
-        bearerAuth: {
-          type: "http",
-          scheme: "bearer",
-          bearerFormat: "JWT",
-        },
-      },
-    },
-    security: [{ bearerAuth: [] }],
-  },
-  apis: [path.resolve(__dirname, "../routes/*.js")],
-});
+// Swagger docs
+app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerFile));
 
-// ✅ Serve swagger.json
-app.get("/swagger.json", (req, res) => {
-  res.setHeader("Content-Type", "application/json");
-  res.send(swaggerSpec);
-});
-
-// ✅ Serve Swagger UI manually using swagger-ui-dist (fix Vercel)
-app.use("/swagger-ui", express.static(swaggerUiDist.absolutePath()));
-app.get("/api-docs", (req, res) => {
-  res.send(`
-    <!DOCTYPE html>
-    <html>
-      <head>
-        <title>Swagger UI</title>
-        <link href="/swagger-ui/swagger-ui.css" rel="stylesheet">
-      </head>
-      <body>
-        <div id="swagger-ui"></div>
-        <script src="/swagger-ui/swagger-ui-bundle.js"></script>
-        <script>
-          window.onload = function () {
-            SwaggerUIBundle({
-              url: "/swagger.json",
-              dom_id: "#swagger-ui"
-            });
-          };
-        </script>
-      </body>
-    </html>
-  `);
-});
-
-// ✅ Health check
+// Health check
 app.get("/__health", (req, res) => {
   res.send("OK");
 });
 
-// ✅ Routes
+// Routes
 app.use("/api/auth", authRoutes);
 app.use("/api/products", productRoutes);
 app.use("/api/categories", categoryRoutes);
@@ -107,7 +54,7 @@ app.use("/api/reviews", reviewRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/admin", adminRoutes);
 
-// ✅ Error handler
+// Error handler
 app.use(errorHandler);
 
 module.exports = app;
