@@ -68,6 +68,19 @@ const swaggerSpec = swaggerJSDoc({
   apis: [path.resolve(__dirname, "../routes/*.js")],
 });
 
+swaggerSpec.paths = swaggerSpec.paths || {};
+swaggerSpec.paths["/__health"] = {
+  get: {
+    summary: "Health check",
+    tags: ["Health"],
+    responses: {
+      200: {
+        description: "OK",
+      },
+    },
+  },
+};
+
 console.log("✅ Swagger loaded paths:", Object.keys(swaggerSpec.paths || {})); // optional debug log
 
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
