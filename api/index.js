@@ -6,7 +6,8 @@ const swaggerUi = require("swagger-ui-express");
 const swaggerJSDoc = require("swagger-jsdoc");
 const path = require("path");
 
-// Import route dari dalam /api/routes/
+dotenv.config();
+
 const authRoutes = require("./routes/auth.routes");
 const productRoutes = require("./routes/product.routes");
 const categoryRoutes = require("./routes/category.routes");
@@ -15,43 +16,36 @@ const orderRoutes = require("./routes/order.routes");
 const reviewRoutes = require("./routes/review.routes");
 const userRoutes = require("./routes/user.routes");
 const adminRoutes = require("./routes/admin.routes");
+const errorHandler = require("./middlewares/errorHandler");
 
-const errorHandler = require("../middlewares/errorHandler");
-
-dotenv.config();
 const app = express();
-
 app.use(cors());
 app.use(express.json());
 
-// Connect MongoDB
+// ✅ MongoDB Connect (cek env sudah diset di Vercel)
 let isConnected = false;
 async function connectMongo() {
   if (isConnected) return;
   try {
     await mongoose.connect(process.env.MONGO_URI);
     isConnected = true;
-    console.log("✅ MongoDB Connected");
+    console.log("✅ MongoDB connected");
   } catch (err) {
-    console.error("❌ MongoDB Connection Error:", err);
+    console.error("❌ MongoDB connection error:", err);
   }
 }
 connectMongo();
 
-// Swagger setup (gunakan path di dalam api/)
+// ✅ Swagger setup
 const swaggerSpec = swaggerJSDoc({
   definition: {
     openapi: "3.0.0",
     info: {
       title: "Game Store Arima API",
       version: "1.0.0",
-      description: "Comprehensive API documentation",
+      description: "API docs for Arima Game Store backend",
     },
-    servers: [
-      {
-        url: "https://be-arima-game-store.vercel.app",
-      },
-    ],
+    servers: [{ url: "https://be-arima-game-store.vercel.app" }],
     components: {
       securitySchemes: {
         bearerAuth: {
@@ -63,28 +57,15 @@ const swaggerSpec = swaggerJSDoc({
     },
     security: [{ bearerAuth: [] }],
   },
-  apis: [path.resolve(__dirname, "./routes/*.js")], // ✅ fix path ke dalam api/
-});
-
-// Tambahkan dummy /__health agar Swagger tidak kosong
-swaggerSpec.paths = swaggerSpec.paths || {};
-swaggerSpec.paths["/__health"] = {
-  get: {
-    summary: "Health check",
-    tags: ["Health"],
-    responses: {
-      200: {
-        description: "OK",
-      },
-    },
-  },
-};
-
-app.get("/__health", (req, res) => {
-  res.status(200).send("OK");
+  apis: [path.join(__dirname, "./routes/*.js")], // ✅ path diperbaiki
 });
 
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+
+// ✅ Optional health check route
+app.get("/__health", (req, res) => {
+  res.send("OK");
+});
 
 // Routes
 app.use("/api/auth", authRoutes);
@@ -96,8 +77,8 @@ app.use("/api/reviews", reviewRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/admin", adminRoutes);
 
-// Error handler
+// Global error handler
 app.use(errorHandler);
 
-// Untuk Vercel
+// ✅ Vercel will use `module.exports` instead of `app.listen()`
 module.exports = app;
