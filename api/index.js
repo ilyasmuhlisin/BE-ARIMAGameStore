@@ -67,7 +67,6 @@ app.get("/swagger.json", (req, res) => {
 });
 
 // ✅ Serve Swagger UI manually using swagger-ui-dist (fix Vercel)
-app.use("/swagger-ui", express.static(swaggerUiDist.absolutePath()));
 app.get("/api-docs", (req, res) => {
   res.send(`
     <!DOCTYPE html>
@@ -79,11 +78,17 @@ app.get("/api-docs", (req, res) => {
       <body>
         <div id="swagger-ui"></div>
         <script src="/swagger-ui/swagger-ui-bundle.js"></script>
+        <script src="/swagger-ui/swagger-ui-standalone-preset.js"></script>
         <script>
           window.onload = function () {
             SwaggerUIBundle({
               url: "/swagger.json",
-              dom_id: "#swagger-ui"
+              dom_id: "#swagger-ui",
+              presets: [
+                SwaggerUIBundle.presets.apis,
+                SwaggerUIStandalonePreset
+              ],
+              layout: "BaseLayout"
             });
           };
         </script>
