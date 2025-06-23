@@ -36,6 +36,11 @@ async function connectMongo() {
 }
 connectMongo();
 
+app.get("/swagger.json", (req, res) => {
+  res.setHeader("Content-Type", "application/json");
+  res.send(swaggerSpec); // <-- ini dihasilkan secara otomatis oleh swagger-jsdoc
+});
+
 // ✅ Swagger setup
 const swaggerSpec = swaggerJSDoc({
   definition: {
