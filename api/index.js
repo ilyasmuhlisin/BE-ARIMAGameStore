@@ -8,15 +8,15 @@ const path = require("path");
 
 dotenv.config();
 
-const authRoutes = require("./routes/auth.routes");
-const productRoutes = require("./routes/product.routes");
-const categoryRoutes = require("./routes/category.routes");
-const developerRoutes = require("./routes/developer.routes");
-const orderRoutes = require("./routes/order.routes");
-const reviewRoutes = require("./routes/review.routes");
-const userRoutes = require("./routes/user.routes");
-const adminRoutes = require("./routes/admin.routes");
-const errorHandler = require("./middlewares/errorHandler");
+const authRoutes = require("../routes/auth.routes");
+const productRoutes = require("../routes/product.routes");
+const categoryRoutes = require("../routes/category.routes");
+const developerRoutes = require("../routes/developer.routes");
+const orderRoutes = require("../routes/order.routes");
+const reviewRoutes = require("../routes/review.routes");
+const userRoutes = require("../routes/user.routes");
+const adminRoutes = require("../routes/admin.routes");
+const errorHandler = require("../middlewares/errorHandler");
 
 const app = express();
 app.use(cors());
@@ -57,7 +57,7 @@ const swaggerSpec = swaggerJSDoc({
     },
     security: [{ bearerAuth: [] }],
   },
-  apis: [path.join(__dirname, "./routes/*.js")], // ✅ path diperbaiki
+  apis: [path.join(__dirname, "../routes/*.js")], // ✅ path diperbaiki
 });
 
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
