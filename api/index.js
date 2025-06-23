@@ -1,5 +1,5 @@
 const express = require("express");
-const cors = require("../config/cors"); // atau "../middlewares/cors" tergantung lokasi file
+const cors = require("cors");
 const errorHandler = require("../middlewares/errorHandler");
 const swaggerUi = require("swagger-ui-express");
 const swaggerFile = require("../swagger-output.json");
