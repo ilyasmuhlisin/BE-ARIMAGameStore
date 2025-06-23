@@ -57,7 +57,7 @@ const swaggerSpec = swaggerJSDoc({
     },
     security: [{ bearerAuth: [] }],
   },
-  apis: [path.join(__dirname, "routes/*.js")],
+  apis: [path.resolve(__dirname, "../routes/*.js")],
 });
 
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
