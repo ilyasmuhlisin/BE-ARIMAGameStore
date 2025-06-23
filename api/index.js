@@ -2,9 +2,9 @@ const express = require("express");
 const dotenv = require("dotenv");
 const cors = require("cors");
 const mongoose = require("mongoose");
-const swaggerUi = require("swagger-ui-express");
 const swaggerJSDoc = require("swagger-jsdoc");
 const path = require("path");
+const swaggerUiDist = require("swagger-ui-dist");
 
 dotenv.config();
 
@@ -22,7 +22,7 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-// ✅ MongoDB Connect (cek env sudah diset di Vercel)
+// ✅ MongoDB Connection
 let isConnected = false;
 async function connectMongo() {
   if (isConnected) return;
@@ -36,7 +36,7 @@ async function connectMongo() {
 }
 connectMongo();
 
-// ✅ Swagger setup
+// ✅ Swagger JSDoc setup
 const swaggerSpec = swaggerJSDoc({
   definition: {
     openapi: "3.0.0",
@@ -60,30 +60,44 @@ const swaggerSpec = swaggerJSDoc({
   apis: [path.resolve(__dirname, "../routes/*.js")],
 });
 
-// ✅ Swagger UI
-// app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
-app.use(
-  "/api-docs",
-  swaggerUi.serve,
-  swaggerUi.setup(swaggerSpec, {
-    swaggerOptions: {
-      url: "/swagger.json", // 👈 arahkan Swagger UI ke JSON yang benar
-    },
-  })
-);
-
-// ✅ Swagger raw JSON
+// ✅ Serve swagger.json
 app.get("/swagger.json", (req, res) => {
   res.setHeader("Content-Type", "application/json");
   res.send(swaggerSpec);
 });
 
-// ✅ Optional health check route
+// ✅ Serve Swagger UI manually using swagger-ui-dist (fix Vercel)
+app.use("/swagger-ui", express.static(swaggerUiDist.absolutePath()));
+app.get("/api-docs", (req, res) => {
+  res.send(`
+    <!DOCTYPE html>
+    <html>
+      <head>
+        <title>Swagger UI</title>
+        <link href="/swagger-ui/swagger-ui.css" rel="stylesheet">
+      </head>
+      <body>
+        <div id="swagger-ui"></div>
+        <script src="/swagger-ui/swagger-ui-bundle.js"></script>
+        <script>
+          window.onload = function () {
+            SwaggerUIBundle({
+              url: "/swagger.json",
+              dom_id: "#swagger-ui"
+            });
+          };
+        </script>
+      </body>
+    </html>
+  `);
+});
+
+// ✅ Health check
 app.get("/__health", (req, res) => {
   res.send("OK");
 });
 
-// Routes
+// ✅ Routes
 app.use("/api/auth", authRoutes);
 app.use("/api/products", productRoutes);
 app.use("/api/categories", categoryRoutes);
@@ -93,8 +107,7 @@ app.use("/api/reviews", reviewRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/admin", adminRoutes);
 
-// Global error handler
+// ✅ Error handler
 app.use(errorHandler);
 
-// ✅ Vercel will use `module.exports` instead of `app.listen()`
 module.exports = app;
