@@ -4,7 +4,6 @@
   "main": "index.js",
   "scripts": {
     "start": "node api/index.js",
-    "swagger-autogen": "cross-env SWAGGER_AUTOGEN=true node swagger.js",
     "dev": "nodemon api/index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
