@@ -61,7 +61,16 @@ const swaggerSpec = swaggerJSDoc({
 });
 
 // ✅ Swagger UI
-app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+// app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+app.use(
+  "/api-docs",
+  swaggerUi.serve,
+  swaggerUi.setup(swaggerSpec, {
+    swaggerOptions: {
+      url: "/swagger.json", // 👈 arahkan Swagger UI ke JSON yang benar
+    },
+  })
+);
 
 // ✅ Swagger raw JSON
 app.get("/swagger.json", (req, res) => {
