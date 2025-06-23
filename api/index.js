@@ -37,6 +37,8 @@ async function connectMongo() {
 }
 connectMongo();
 
+const path = require("path");
+
 // Swagger Setup
 const swaggerSpec = swaggerJSDoc({
   definition: {
@@ -63,8 +65,10 @@ const swaggerSpec = swaggerJSDoc({
     },
     security: [{ bearerAuth: [] }],
   },
-  apis: ["../routes/*.js", "../routes/**/*.js"],
+  apis: [path.resolve(__dirname, "../routes/*.js")],
 });
+
+console.log("✅ Swagger loaded paths:", Object.keys(swaggerSpec.paths || {})); // optional debug log
 
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
