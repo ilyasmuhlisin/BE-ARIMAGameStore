@@ -6,8 +6,8 @@ const {
   updateCategory,
   deleteCategory,
 } = require("../controllers/category.controller");
-const authMiddleware = require("../../middlewares/authMiddleware");
-const adminMiddleware = require("../../middlewares/adminMiddleware");
+const authMiddleware = require("../middlewares/authMiddleware");
+const adminMiddleware = require("../middlewares/adminMiddleware");
 
 router.get("/", getAllCategories);
 router.post("/", authMiddleware, adminMiddleware, createCategory);

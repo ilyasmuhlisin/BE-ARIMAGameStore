@@ -6,8 +6,8 @@ const {
   updateDeveloper,
   deleteDeveloper,
 } = require("../controllers/developer.controller");
-const authMiddleware = require("../../middlewares/authMiddleware");
-const adminMiddleware = require("../../middlewares/adminMiddleware");
+const authMiddleware = require("../middlewares/authMiddleware");
+const adminMiddleware = require("../middlewares/adminMiddleware");
 
 router.get("/", getAllDevelopers);
 router.post("/", authMiddleware, adminMiddleware, createDeveloper);

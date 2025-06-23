@@ -7,8 +7,8 @@ const {
   updateProduct,
   deleteProduct,
 } = require("../controllers/product.controller");
-const authMiddleware = require("../../middlewares/authMiddleware");
-const adminMiddleware = require("../../middlewares/adminMiddleware");
+const authMiddleware = require("../middlewares/authMiddleware");
+const adminMiddleware = require("../middlewares/adminMiddleware");
 
 router.get("/", getAllProducts);
 router.get("/:id", getProductById);
