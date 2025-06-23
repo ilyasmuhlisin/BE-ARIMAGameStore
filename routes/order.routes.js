@@ -1,8 +1,13 @@
 const express = require("express");
 const router = express.Router();
-const { createOrder, getMyOrders, getAllOrders, verifyOrder } = require("../controllers/order.controller");
-const authMiddleware = require("../middlewares/authMiddleware");
-const adminMiddleware = require("../middlewares/adminMiddleware");
+const {
+  createOrder,
+  getMyOrders,
+  getAllOrders,
+  verifyOrder,
+} = require("../controllers/order.controller");
+const authMiddleware = require("../../middlewares/authMiddleware");
+const adminMiddleware = require("../../middlewares/adminMiddleware");
 
 /**
  * @swagger
