@@ -49,7 +49,7 @@ const swaggerSpec = swaggerJSDoc({
     },
     servers: [
       {
-        url: "https://<your-vercel-domain>.vercel.app", // Ganti setelah deploy
+        url: "https://be-arima-game-store.vercel.app",
       },
     ],
     components: {
@@ -63,7 +63,7 @@ const swaggerSpec = swaggerJSDoc({
     },
     security: [{ bearerAuth: [] }],
   },
-  apis: ["./routes/*.js"],
+  apis: ["../routes/*.js"],
 });
 
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
