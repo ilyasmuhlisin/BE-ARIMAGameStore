@@ -1,12 +1,8 @@
 const express = require("express");
-const dotenv = require("dotenv");
-const cors = require("cors");
-const mongoose = require("mongoose");
+const cors = require("../config/cors"); // atau "../middlewares/cors" tergantung lokasi file
+const errorHandler = require("../middlewares/errorHandler");
 const swaggerUi = require("swagger-ui-express");
 const swaggerFile = require("../swagger-output.json");
-const path = require("path");
-
-dotenv.config();
 
 const authRoutes = require("../routes/auth.routes");
 const productRoutes = require("../routes/product.routes");
@@ -16,35 +12,22 @@ const orderRoutes = require("../routes/order.routes");
 const reviewRoutes = require("../routes/review.routes");
 const userRoutes = require("../routes/user.routes");
 const adminRoutes = require("../routes/admin.routes");
-const errorHandler = require("../middlewares/errorHandler");
 
 const app = express();
-app.use(cors());
+
 app.use(express.json());
 
-// Connect MongoDB
-let isConnected = false;
-async function connectMongo() {
-  if (isConnected) return;
-  try {
-    await mongoose.connect(process.env.MONGO_URI);
-    isConnected = true;
-    console.log("✅ MongoDB connected");
-  } catch (err) {
-    console.error("❌ MongoDB connection error:", err);
-  }
+// ✅ CORS hanya aktif saat tidak dijalankan oleh swagger-autogen
+if (process.env.SWAGGER_AUTOGEN !== "true") {
+  app.use(cors());
 }
-connectMongo();
 
-// Swagger docs
-app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerFile));
-
-// Health check
+// ✅ Health check (optional)
 app.get("/__health", (req, res) => {
   res.send("OK");
 });
 
-// Routes
+// ✅ All routes prefix /api
 app.use("/api/auth", authRoutes);
 app.use("/api/products", productRoutes);
 app.use("/api/categories", categoryRoutes);
@@ -54,7 +37,20 @@ app.use("/api/reviews", reviewRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/admin", adminRoutes);
 
-// Error handler
+// ✅ Swagger UI (dengan custom CSS dari CDN)
+const CSS_URL =
+  "https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/4.1.0/swagger-ui.min.css";
+app.use(
+  "/api-docs",
+  swaggerUi.serve,
+  swaggerUi.setup(swaggerFile, {
+    customCss:
+      ".swagger-ui .opblock .opblock-summary-path-description-wrapper { align-items: center; display: flex; flex-wrap: wrap; gap: 0 10px; padding: 0 10px; width: 100%; }",
+    customCssUrl: CSS_URL,
+  })
+);
+
+// ✅ Global error handler
 app.use(errorHandler);
 
 module.exports = app;

@@ -1,4 +1,3 @@
-// swagger.js
 const swaggerAutogen = require("swagger-autogen")();
 
 const doc = {
@@ -20,6 +19,6 @@ const doc = {
 };
 
 const outputFile = "./swagger-output.json";
-const endpointsFiles = ["./api/index.js"];
+const endpointsFiles = ["./api/index.js"]; // Ganti jika file utamamu berbeda
 
 swaggerAutogen(outputFile, endpointsFiles, doc);

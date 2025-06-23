@@ -4,7 +4,7 @@
   "main": "index.js",
   "scripts": {
     "start": "node api/index.js",
-    "swagger-autogen": "node swagger.js",
+    "swagger-autogen": "cross-env SWAGGER_AUTOGEN=true node swagger.js",
     "dev": "nodemon api/index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -25,6 +25,7 @@
     "swagger-ui-express": "^5.0.1"
   },
   "devDependencies": {
+    "cross-env": "^7.0.3",
     "nodemon": "^3.1.10"
   }
 }
