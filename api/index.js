@@ -67,34 +67,27 @@ app.get("/swagger.json", (req, res) => {
 });
 
 // ✅ Serve Swagger UI manually using swagger-ui-dist (fix Vercel)
+app.use("/swagger-ui", express.static(swaggerUiDist.absolutePath()));
 app.get("/api-docs", (req, res) => {
   res.send(`
     <!DOCTYPE html>
-    <html lang="en">
-    <head>
-      <meta charset="UTF-8">
-      <title>Swagger UI</title>
-      <link rel="stylesheet" href="/swagger-ui/swagger-ui.css">
-    </head>
-    <body>
-      <div id="swagger-ui"></div>
-      <script src="/swagger-ui/swagger-ui-bundle.js"></script>
-      <script src="/swagger-ui/swagger-ui-standalone-preset.js"></script>
-      <script>
-        window.onload = () => {
-          window.ui = SwaggerUIBundle({
-            url: "/swagger.json",
-            dom_id: "#swagger-ui",
-            deepLinking: true,
-            presets: [
-              SwaggerUIBundle.presets.apis,
-              SwaggerUIStandalonePreset
-            ],
-            layout: "StandaloneLayout"
-          });
-        };
-      </script>
-    </body>
+    <html>
+      <head>
+        <title>Swagger UI</title>
+        <link href="/swagger-ui/swagger-ui.css" rel="stylesheet">
+      </head>
+      <body>
+        <div id="swagger-ui"></div>
+        <script src="/swagger-ui/swagger-ui-bundle.js"></script>
+        <script>
+          window.onload = function () {
+            SwaggerUIBundle({
+              url: "/swagger.json",
+              dom_id: "#swagger-ui"
+            });
+          };
+        </script>
+      </body>
     </html>
   `);
 });
