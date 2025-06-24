@@ -72,9 +72,6 @@ router.delete("/:id", authMiddleware, adminMiddleware, deleteUser);
  *               username:
  *                 type: string
  *                 example: newUsername
- *               password:
- *                 type: string
- *                 example: newPassword123
  *     responses:
  *       200:
  *         description: Updated user profile
@@ -82,8 +79,26 @@ router.delete("/:id", authMiddleware, adminMiddleware, deleteUser);
  *           application/json:
  *             schema:
  *               $ref: '#/components/schemas/User'
+ *       400:
+ *         description: Username is required
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Username is required
  *       404:
  *         description: User not found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: User not found
  */
 
 /**
