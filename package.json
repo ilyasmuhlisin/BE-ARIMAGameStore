@@ -10,7 +10,7 @@
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "description": "Backend API for Game Store Arima application",
+  "description": "Backend API for ARIMA Game Store application",
   "dependencies": {
     "bcryptjs": "^2.4.3",
     "cors": "^2.8.5",
