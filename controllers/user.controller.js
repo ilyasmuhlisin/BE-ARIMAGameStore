@@ -13,14 +13,14 @@ const getUserProfile = async (req, res, next) => {
 
 const updateUserProfile = async (req, res, next) => {
   try {
-    const { username, password } = req.body;
-    const updateData = {};
-    if (username) updateData.username = username;
-    if (password) updateData.password = await bcrypt.hash(password, 10);
+    const { username } = req.body;
+    if (!username) return res.status(400).json({ message: 'Username is required' });
 
-    const user = await User.findByIdAndUpdate(req.user.id, updateData, { new: true }).select(
-      '-password -session_token'
-    );
+    const user = await User.findByIdAndUpdate(
+      req.user.id,
+      { username },
+      { new: true }
+    ).select('-password -session_token');
     if (!user) return res.status(404).json({ message: 'User not found' });
     res.json(user);
   } catch (err) {
